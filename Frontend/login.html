@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scholars Crate - Login</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/form.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .password-field {
+      position: relative;
+    }
+
+    .password-field input {
+      padding-right: 30px; /* Create space for the icon */
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Welcome</h2>
+        <p>Login to discover new scholarship opportunities</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div class="form-grid">
+          <!-- Email -->
+          <div class="form-field">
+            <label>
+              <i data-lucide="mail"></i>
+              Email
+            </label>
+            <input 
+              type="email" 
+              name="email" 
+              required
+              placeholder="you@example.com">
+          </div>
+
+          <!-- Password -->
+          <div class="form-field">
+            <label>
+              <i data-lucide="lock"></i>
+              Password
+            </label>
+            <div class="password-field">
+              <input 
+                type="password" 
+                name="password" 
+                required
+                id="loginPassword"
+                placeholder="Enter your password">
+              <button type="button" class="toggle-password" onclick="togglePasswordVisibility('loginPassword')">
+                <i data-lucide="eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Forgot Password -->
+          <div class="form-field">
+            <a href="#" class="forgot-password">Forgot your password?</a>
+          </div>
+        </div>
+
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    lucide.createIcons();
+
+    // Toggle password visibility function
+    function togglePasswordVisibility(passwordFieldId) {
+      const passwordField = document.getElementById(passwordFieldId);
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+      } else {
+        passwordField.type = "password";
+      }
+    }
+
+    // Handle form submission
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();  // Prevent form submission
+
+      const email = e.target.email.value;
+      const password = e.target.password.value;
+
+      try {
+        const response = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // If login is successful, redirect to the scholarship page
+          window.location.href = 'scholarship.html'; // Redirect to the scholarship page
+        } else {
+          // Handle error (invalid login)
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error during fetch:', error);
+        alert('An error occurred during login. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>

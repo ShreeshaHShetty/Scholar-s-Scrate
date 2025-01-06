@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholar's Crate - Scholarships</title>
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo">
+            <img src="assets\images\main_logo.png" alt="Scholar's Crate Logo">
+        </a>
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <ul>
+                <li><a href="scholarship.html">Home</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="profile.html">Profile</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <aside class="filter-panel">
+                <h2>Filters</h2>
+                <div class="filter-options">
+                    <label class="filter-option">
+                        <input type="radio" name="filter" value="all" checked>
+                        <span>All Scholarships</span>
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="filter" value="eligible">
+                        <span>Eligible Scholarships</span>
+                    </label>
+                </div>
+            </aside>
+
+            <section class="scholarships-grid" id="scholarshipsGrid">
+                <!-- Dynamic Scholarship Cards will be displayed here -->
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 Scholar's Crate. All rights reserved.</p>
+            <ul class="footer-nav">
+                <li><a href="privacy.html">Privacy Policy</a></li>
+                <li><a href="terms.html">Terms of Service</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterRadios = document.querySelectorAll('input[name="filter"]');
+            filterRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    const selectedFilter = document.querySelector('input[name="filter"]:checked').value;
+                    fetchScholarships(selectedFilter);
+                });
+            });
+
+            function fetchScholarships(filter) {
+                const userProfile = {
+                    educationLevel: "Undergraduate",
+                    annualIncome: 50000,
+                    gender: "Male",
+                    religion: null,
+                    caste: null,
+                    state: "Karnataka",
+                    district: "Bangalore"
+                };
+
+                const url = filter === 'eligible' 
+                    ? `/scholarships/eligible?educationLevel=${userProfile.educationLevel}&annualIncome=${userProfile.annualIncome}&gender=${userProfile.gender}&religion=${userProfile.religion}&caste=${userProfile.caste}&state=${userProfile.state}&district=${userProfile.district}`
+                    : '/scholarships/all';
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayScholarships(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching scholarships:', error);
+                    });
+            }
+
+            function displayScholarships(scholarships) {
+                const grid = document.getElementById('scholarshipsGrid');
+                grid.innerHTML = '';
+
+                scholarships.forEach(scholarship => {
+                    const card = document.createElement('article');
+                    card.classList.add('scholarship-card');
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <img src="${scholarship.logo}" alt="${scholarship.provider}" class="provider-logo">
+                            <div class="provider-info">
+                                <h3>${scholarship.name}</h3>
+                                <p>${scholarship.provider}</p>
+                            </div>
+                        </div>
+                        <p class="description">${scholarship.description}</p>
+                        <div class="scholarship-details">
+                            <p class="amount">₹${scholarship.amount}</p>
+                            <p class="deadline">Deadline: ${new Date(scholarship.deadline).toLocaleDateString()}</p>
+                        </div>
+                        <a href="${scholarship.applyLink}" class="apply-button" target="_blank">Apply Now</a>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            fetchScholarships('all');
+        });
+    </script>
+</body>
+</html>
